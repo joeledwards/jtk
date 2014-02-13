@@ -96,8 +96,9 @@ class Insert:
     def recurse(self, path, depth):
         if depth == 0:
             return
+        print path
         if os.path.isdir(path):
-            for name in os.path.listdir(path):
+            for name in os.listdir(path):
                 new_path = os.path.join(path, name)
                 self.recurse(new_path, self.depth - 1)
         elif not os.path.isfile(path):
@@ -122,7 +123,7 @@ class Main:
 
         option_list.append(optparse.make_option("-b", "--byte-oriented", dest="byte_oriented", action="store_true", help="Index and clip operations are byte orientated instead of line oriented."))
         option_list.append(optparse.make_option("-c", "--clip", dest="clip", action="store", metavar="CLIP_COUNT", type="int", help="Remove the first CLIP_COUNT lines from the file. This is performed before the insertion."))
-        option_list.append(optparse.make_option("-d", "--depth", dest="depth", action="store", type="int", help="Recurse this many levels for each matched path (includes current level). Enables recursion even without the -R flag, limits recursion even whith the -R flag."))
+        option_list.append(optparse.make_option("-d", "--depth", dest="depth", action="store", type="int", help="Recurse this many levels for each matched path (includes current level). Enables recursion even without the -r flag, limits recursion even whith the -r flag."))
         option_list.append(optparse.make_option("-e", "--save-extension", dest="save_extension", action="store", metavar="EXTENSION", default=".insert.save", help="The original file will be renamed with the given extension. (compatible with -p flag)"))
         option_list.append(optparse.make_option("-f", "--content-file", dest="content_file", action="store", metavar="CONTENT_FILE", help="Read insert content from CONTENT_FILE."))
         option_list.append(optparse.make_option("-i", "--insert-index", dest="index", action="store", metavar="INDEX", type="int", help="Insert content before line/byte INDEX (indices start at zero). This is performed after any specified clip operation."))
@@ -204,13 +205,13 @@ class Main:
                 arg_content = open(arg_content, 'r').read()
 
         if self.options.verbosity:
-            verbosity = self.options.verbosity
+            arg_verbosity = self.options.verbosity
 
         Insert(self.args, arg_content, arg_depth, arg_match_regex, arg_index, arg_clip, arg_line_oriented, arg_extension, arg_prefix, arg_delete_save, arg_verbosity).run()
 
 if __name__ == '__main__':
     try:
         Main().start()
-    except KeyboardInterrupt:
-        print
+    except KeyboardInterrupt, e:
+        print e
 
