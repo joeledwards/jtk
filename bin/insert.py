@@ -96,7 +96,6 @@ class Insert:
     def recurse(self, path, depth):
         if depth == 0:
             return
-        print path
         if os.path.isdir(path):
             for name in os.listdir(path):
                 new_path = os.path.join(path, name)
