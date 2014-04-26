@@ -19,7 +19,7 @@ class Process(multiprocessing.Process, Class):
         else:
             self.queue = queue
 
-  # Forces the thread to halt immediately
+  # Forces the process to halt immediately
     def halt_now(self, join=True):
         self.running = False
         self.halt(join)
@@ -33,7 +33,7 @@ class Process(multiprocessing.Process, Class):
                 self.join()
             except RuntimeError, err:
                 self._log("halt() RuntimeError: %s" % str(err), 'err')
-                pass # handle the situation where halt() is called by this thread
+                pass # handle the situation where halt() is called by this process
 
     def run(self):
         self._pre()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import asl
+import env
 
 import asyncore
 import optparse
