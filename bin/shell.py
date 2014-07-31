@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import glob
 import os
+import readline
 import shlex
 import subprocess
 import sys
