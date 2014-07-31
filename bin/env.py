@@ -77,57 +77,5 @@ else:
     new_icon = new_icon_none
     scale_pixbuf = scale_pixbuf_none
 
-asl_path_file = ""
-if os.environ.has_key('ASL_UTILITIES_PATH_FILE'):
-    asl_path_file = os.path.abspath(os.environ['ASL_UTILITIES_PATH_FILE'])
-
-try:
-    home_directory = os.path.abspath(os.environ['HOME'])
-except:
-    home_directory = os.path.abspath(os.environ['USERPROFILE'])
-if not os.path.isfile(asl_path_file):
-    asl_path_file = os.path.abspath(home_directory + '/.asl_utilities_path')
-
-if not os.path.isfile(asl_path_file):
-    path = os.path.dirname(sys.path[1])
-else:
-    fh = open(asl_path_file, 'r')
-    path = fh.readline().strip()
-
-if not os.path.exists(path):
-    print "ASL Utilities directory '%s' does not exist" % path
-    sys.exit(1)
-if not os.path.isdir(path):
-    print "path '%s' exists, but is not a directory" % path
-    sys.exit(1)
-
-python_path = os.path.abspath(path + '/lib/python')
-if not os.path.exists(python_path):
-    python_path = os.path.abspath(path + '/python')
-
-if not os.path.exists(python_path):
-    print "Python library '%s' does not exist" % python_path
-    sys.exit(1)
-if not os.path.isdir(python_path):
-    print "path '%s' exists, but is not a directory" % python_path
-    sys.exit(1)
-
-if platform.system() == 'Linux':
-    if platform.architecture()[0] == '64bit':
-        aescrypt_bin = os.path.abspath(path + '/utils/aescrypt/aescrypt.linux64')
-    else:
-        aescrypt_bin = os.path.abspath(path + '/utils/aescrypt/aescrypt.linux')
-elif platform.system() == 'FreeBSD':
-    aescrypt_bin = os.path.abspath(path + '/utils/aescrypt/aescrypt.bsd')
-else:
-    aescrypt_bin = os.path.abspath(path + '/utils/aescrypt/aescrypt.exe')
-if not os.path.exists(aescrypt_bin):
-    aescrypt_bin = ''
-
-xmax_path = os.path.abspath(path + '/utils/xmax')
-if not os.path.exists(xmax_path):
-    xmax_path = ''
-
-
-sys.path.insert(0, python_path)
+sys.path.insert(0, "..")
 

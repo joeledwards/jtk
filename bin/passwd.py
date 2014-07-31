@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import env
 
 # Custom Modules
 from jtk import pexpect

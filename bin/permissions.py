@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import asl
+import env
 
 from jtk.permissions import Main
 
