@@ -20,10 +20,6 @@ ACTION_ENABLE    = 1
 ACTION_IGNORE    = 2
 ACTION_PROPOGATE = 3
 
-def T(e,a,b):
-    if e: return a
-    else: return b
-
 def code_to_action(code):
     if code == 'D': return ACTION_DISABLE
     if code == 'E': return ACTION_ENABLE
@@ -226,24 +222,24 @@ def mode_to_text(mode):
     elif stat.S_ISSOCK(mode): mode_str += 's'
     #elif stat.S_ISREG(mode):  mode_str += '-'
     else:  mode_str += '-'
-    mode_str += T(mode & stat.S_IRUSR,'r','-')
-    mode_str += T(mode & stat.S_IWUSR,'w','-')
+    mode_str += 'r' if mode & stat.S_IRUSR else '-'
+    mode_str += 'w' if mode & stat.S_IWUSR else '-'
     if stat.S_ISUID & mode:
-        mode_str += T(mode & stat.S_IXUSR,'s','S')
+        mode_str += 's' if mode & stat.S_IXUSR else 'S'
     else:
-        mode_str += T(mode & stat.S_IXUSR,'x','-')
-    mode_str += T(mode & stat.S_IRGRP,'r','-')
-    mode_str += T(mode & stat.S_IWGRP,'w','-')
+        mode_str += 'x' if mode & stat.S_IXUSR else '-'
+    mode_str += 'r' if mode & stat.S_IRGRP else '-'
+    mode_str += 'w' if mode & stat.S_IWGRP else '-'
     if stat.S_ISGID & mode:
-        mode_str += T(mode & stat.S_IXGRP,'s','S')
+        mode_str += 's' if mode & stat.S_IXGRP else 'S'
     else:
-        mode_str += T(mode & stat.S_IXGRP,'x','-')
-    mode_str += T(mode & stat.S_IROTH,'r','-')
-    mode_str += T(mode & stat.S_IWOTH,'w','-')
+        mode_str += 'x' if mode & stat.S_IXGRP else '-'
+    mode_str += 'r' if mode & stat.S_IROTH else '-'
+    mode_str += 'w' if mode & stat.S_IWOTH else '-'
     if stat.S_ISVTX & mode:
-        mode_str += T(mode & stat.S_IXOTH,'t','T')
+        mode_str += 't' if mode & stat.S_IXOTH else 'T'
     else:
-        mode_str += T(mode & stat.S_IXOTH,'x','-')
+        mode_str += 'x' if mode & stat.S_IXOTH else '-'
     return mode_str
 
 class Main:
@@ -317,7 +313,6 @@ change, and the execute permission will be the same as that of the group.""")
             if len(arg_group) != 3:
                 self.usage("Wrong size mask for group")
             if not regex_mask.match(arg_group):
-                self.usage()
                 self.usage("Invalid mask for group")
 
         if self.options.user:
