@@ -9,14 +9,15 @@ import time
 """
 This Shell object simplifies the process of writing scripts.
 
-execute(command) - this method can be used in order to execute shell commands.
+execute(command, [stdin], [stdout], [stderr], [die]) - this method can be used in order to execute shell commands.
 
 log(message, [category]) - this method can be used to log information whose lines
 are cleanly differentiated from the exec output
 """
 class Shell(object):
-    def __init__(self):
+    def __init__(self, simulate=False):
         object.__init__(self)
+        self.simulate=simulate
 
     def log(self, message, category=None):
         now = time.time()
@@ -35,9 +36,22 @@ class Shell(object):
     def script(self):
         raise NotImplementedError("The script() method must be replaced with the functionality of your script.")
 
-    def execute(self, command):
-        cmd = Command(command, stdout=sys.stdout, stderr=sys.stderr)
-        return cmd.execute()
+    def execute(self, command, stdin=None, stdout=sys.stdout, stderr=sys.stderr, die=False):
+        exec_func = self.simulation_exec if self.simulate else self.real_exec
+        return exec_func(command, stdin=stdin, stdout=stdout, stderr=stderr, die=die)
+
+    def simulation_exec(self, command, stdin=None, stdout=sys.stdout, stderr=sys.stderr, die=False):
+        print "[simulation] command> %s" % command
+        return 0
+
+    def real_exec(self, command, stdin=None, stdout=sys.stdout, stderr=sys.stderr, die=False):
+        cmd = Command(command, stdin=stdin, stdout=stdout, stderr=stderr)
+        status_code = cmd.execute()
+
+        if die and status_code != 0:
+            sys.exit(status_code)
+
+        return status_code
 
 """
 This class wraps the logic for executing a command and forwarding input/output.
@@ -129,11 +143,13 @@ class Pipe(threading.Thread):
         self.running = True
         c = 'a'
 
-        while self.running or (c is not None and c != ''):
-            c = self.input.read(1)
-            self.output.write(c)
-
-        self.output.flush()
+        try:
+            while self.running or (c is not None and c != ''):
+                c = self.input.read(1)
+                self.output.write(c)
+                self.output.flush()
+        except Exception, e:
+            sys.stderr.write("Error while forwarding pipe data: %s\n" % str(e))
 
 class TestShell(Shell):
     def __init__(self):
@@ -150,8 +166,32 @@ class TestShell(Shell):
         else:
             self.log("Operation failed.")
 
+class TestKill(Shell):
+    def __init__(self):
+        Shell.__init__(self)
+        self.cmd = Command("sleep 2")
+
+    def run(self):
+        self.log("launching kill thread...")
+        threading.Thread(target=self.kill).start()
+        self.log("executing command...")
+        self.cmd.execute()
+        self.log("done.")
+
+    def kill(self):
+        time.sleep(0.50)
+        self.log("killing command...")
+        self.cmd.kill()
+        self.log("dead.")
+
 def main():
+    print "Testing simple Shell implementation..."
     TestShell().run()
+
+    time.sleep(1.0)
+
+    print "Testing killing of active Command..."
+    TestKill().run()
 
 if __name__ == "__main__":
     main()
